@@ -1,22 +1,33 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+# Utiliser l'image SDK .NET Core 8.0 pour la construction
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+# Définir le répertoire de travail dans le conteneur
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
-COPY ["thetiptopapi/thetiptopapi.csproj", "thetiptopapi/"]
-RUN dotnet restore "thetiptopapi/thetiptopapi.csproj"
+# Copier le fichier csproj et restaurer les dépendances (cela permettra une construction plus rapide en utilisant le cache)
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copier tout le reste du code source dans le conteneur
 COPY . .
-WORKDIR "/src/thetiptopapi"
-RUN dotnet build "thetiptopapi.csproj" -c Release -o /app/build
 
-FROM build AS publish
-RUN dotnet publish "thetiptopapi.csproj" -c Release -o /app/publish /p:UseAppHost=false
+# Publier l'application en utilisant le profil de publication Release
+RUN dotnet publish -c Release -o out
 
-FROM base AS final
+# Utiliser une image légère ASP.NET Core pour exécuter l'application
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+
+# Définir le répertoire de travail dans le conteneur
 WORKDIR /app
-COPY --from=publish /app/publish .
+
+# Copier les fichiers publiés depuis l'étape précédente dans ce conteneur
+COPY --from=build /app/out .
+
+# Définir l'URL à laquelle l'application écoutera (par défaut, c'est http://*:80)
+ENV ASPNETCORE_URLS http://*:80
+
+# Exposer le port 80 sur le conteneur
+EXPOSE 80
+
+# Démarrer l'application lorsqu'un conteneur basé sur cette image est lancé
 ENTRYPOINT ["dotnet", "thetiptopapi.dll"]

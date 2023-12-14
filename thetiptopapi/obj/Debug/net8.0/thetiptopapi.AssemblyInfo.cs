@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("thetiptopapi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+78ff0a441d2e67ade943b6670d1d10dc8b55dca5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
 [assembly: System.Reflection.AssemblyProductAttribute("thetiptopapi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("thetiptopapi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
